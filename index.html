@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SpotyLoad</title>
+    <style>
+        :root {
+            --primary: #1DB954;
+            --primary-dark: #1ed760;
+            --dark: #121212;
+            --dark-surface: #181818;
+            --light: #FFFFFF;
+            --gray: #535353;
+            --gray-light: #b3b3b3;
+            --background: #000000;
+            --surface: #181818;
+            --gradient: linear-gradient(135deg, #1DB954 0%, #1ed760 100%);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+            background: var(--background);
+            color: var(--light);
+            line-height: 1.6;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        .background-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(-45deg, #000000, #0d1f0f, #000000, #1a1a1a);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
+            z-index: -1;
+        }
+        
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .language-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+        
+        .lang-btn {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--gray-light);
+            padding: 0.4rem 0.8rem;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.8rem;
+            font-weight: 400;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .lang-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--light);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 4rem;
+            animation: fadeInUp 1s ease;
+        }
+        
+        .logo {
+            display: inline-flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .spotify-icon {
+            width: 50px;
+            height: 50px;
+            animation: pulse 2s infinite;
+            filter: drop-shadow(0 0 10px rgba(29, 185, 84, 0.3));
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        .logo h1 {
+            font-size: 3rem;
+            font-weight: 800;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .subtitle {
+            color: var(--gray-light);
+            font-size: 1.2rem;
+            margin-top: 0.5rem;
+        }
+        
+        main {
+            background: rgba(24, 24, 24, 0.8);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 3rem;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            animation: fadeInUp 1s ease 0.3s both;
+        }
+        
+        .form-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        
+        .form-header h2 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        
+        .form-header p {
+            color: var(--gray-light);
+            font-size: 1.1rem;
+        }
+        
+        .input-container {
+            position: relative;
+            margin-bottom: 2rem;
+        }
+        
+        .input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            transition: all 0.3s ease;
+            overflow: hidden;
+        }
+        
+        .input-wrapper:focus-within {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(29, 185, 84, 0.1);
+        }
+        
+        .input-wrapper input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            padding: 1.2rem 1.5rem;
+            color: var(--light);
+            font-size: 1rem;
+            outline: none;
+        }
+        
+        .input-wrapper input::placeholder {
+            color: var(--gray);
+        }
+        
+        .convert-btn {
+            background: var(--gradient);
+            color: var(--light);
+            border: none;
+            padding: 1.2rem 2rem;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+        
+        .convert-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(29, 185, 84, 0.3);
+        }
+        
+        .convert-btn:active {
+            transform: translateY(0);
+        }
+        
+        .quality-section {
+            margin-bottom: 2rem;
+        }
+        
+        .quality-label {
+            color: var(--gray-light);
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 500;
+        }
+        
+        .quality-options {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        
+        .quality-btn {
+            padding: 0.8rem 1.5rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 25px;
+            color: var(--gray-light);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+        
+        .quality-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+        }
+        
+        .quality-btn.active {
+            background: var(--gradient);
+            color: var(--light);
+            border-color: var(--primary);
+        }
+        
+        .result {
+            display: none;
+            margin-top: 3rem;
+            animation: slideInUp 0.6s ease;
+        }
+        
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .song-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 2rem;
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+        
+        .album-cover {
+            width: 120px;
+            height: 120px;
+            border-radius: 10px;
+            object-fit: cover;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            flex-shrink: 0;
+        }
+        
+        .song-details {
+            flex: 1;
+        }
+        
+        .song-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: var(--light);
+        }
+        
+        .song-artist {
+            font-size: 1.1rem;
+            color: var(--gray-light);
+            margin-bottom: 1.5rem;
+        }
+        
+        .download-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: var(--gradient);
+            color: var(--light);
+            padding: 1rem 2rem;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .download-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(29, 185, 84, 0.4);
+        }
+        
+        .demo-notice {
+            background: rgba(255, 193, 7, 0.1);
+            border: 1px solid rgba(255, 193, 7, 0.3);
+            border-radius: 10px;
+            padding: 1rem;
+            margin-top: 2rem;
+            text-align: center;
+            color: #ffc107;
+        }
+        
+        footer {
+            margin-top: 4rem;
+            text-align: center;
+            color: var(--gray);
+            font-size: 0.9rem;
+            animation: fadeInUp 1s ease 0.6s both;
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+            
+            .logo h1 {
+                font-size: 2.5rem;
+            }
+            
+            main {
+                padding: 2rem 1.5rem;
+            }
+            
+            .input-wrapper {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .input-wrapper input {
+                border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            }
+            
+            .convert-btn {
+                border-radius: 0 0 15px 15px;
+            }
+            
+            .song-card {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .quality-options {
+                justify-content: center;
+            }
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 2rem;
+        }
+        
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(29, 185, 84, 0.3);
+            border-top: 3px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="background-animation"></div>
+    
+    <div class="language-toggle">
+        <button class="lang-btn" id="langToggle">EN</button>
+    </div>
+    
+    <div class="container">
+        <header>
+            <div class="logo">
+                <img src="https://storage.googleapis.com/pr-newsroom-wp/1/2023/05/Spotify_Primary_Logo_RGB_Green.png" alt="Spotify Logo" class="spotify-icon">
+                <h1 data-text="title">SpotyLoad</h1>
+            </div>
+            <p class="subtitle" data-text="subtitle">Demo de Interfaz - Solo Fines Educativos</p>
+        </header>
+        
+        <main>
+            <div class="form-header">
+                <h2 data-text="main-title">Interfaz de Descarga Musical</h2>
+                <p data-text="main-description">Esta es una demostración de interfaz únicamente</p>
+            </div>
+            
+            <div class="input-container">
+                <div class="input-wrapper">
+                    <input type="text" id="spotify-url" data-placeholder="url-placeholder" placeholder="https://open.spotify.com/track/..." autocomplete="off">
+                    <button class="convert-btn" id="convert-btn" data-text="convert-btn">Analizar</button>
+                </div>
+            </div>
+            
+            <div class="quality-section">
+                <div class="quality-label" data-text="quality-label">Calidad de Audio</div>
+                <div class="quality-options">
+                    <div class="quality-btn active" data-quality="high" data-text="quality-high">320 kbps</div>
+                    <div class="quality-btn" data-quality="medium" data-text="quality-medium">192 kbps</div>
+                    <div class="quality-btn" data-quality="low" data-text="quality-low">128 kbps</div>
+                </div>
+            </div>
+            
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <p data-text="loading">Analizando enlace...</p>
+            </div>
+            
+            <div class="result" id="result">
+                <div class="song-card">
+                    <img src="https://i.scdn.co/image/ab67616d0000b273c8a11e48c91a982d086afc69" alt="Album Cover" class="album-cover" id="album-cover">
+                    <div class="song-details">
+                        <h3 class="song-title" id="song-title">Canción de Demostración</h3>
+                        <p class="song-artist" id="song-artist">Artista de Ejemplo</p>
+                        <a href="#" class="download-btn" id="download-link" data-text="download-btn">
+                            ⬇️ Descargar MP3
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="demo-notice">
+                    <p data-text="demo-notice">⚠️ Esta es solo una demostración de interfaz. No se realizan descargas reales.</p>
+                </div>
+            </div>
+        </main>
+        
+        <footer>
+            <p data-text="footer">Esta aplicación es solo una demostración de UI/UX. No está afiliada a Spotify.</p>
+        </footer>
+    </div>
+    
+    <script>
+        // Traducciones
+        const translations = {
+            es: {
+                'title': 'SpotyLoad',
+                'subtitle': 'Demo de Interfaz - Solo Fines Educativos',
+                'main-title': 'Interfaz de Descarga Musical',
+                'main-description': 'Esta es una demostración de interfaz únicamente',
+                'url-placeholder': 'https://open.spotify.com/track/...',
+                'convert-btn': 'Analizar',
+                'quality-label': 'Calidad de Audio',
+                'quality-high': '320 kbps',
+                'quality-medium': '192 kbps',
+                'quality-low': '128 kbps',
+                'loading': 'Analizando enlace...',
+                'download-btn': '⬇️ Descargar MP3',
+                'demo-notice': '⚠️ Esta es solo una demostración de interfaz. No se realizan descargas reales.',
+                'footer': 'Esta aplicación es solo una demostración de UI/UX. No está afiliada a Spotify.'
+            },
+            en: {
+                'title': 'SpotyLoad',
+                'subtitle': 'Interface Demo - Educational Purposes Only',
+                'main-title': 'Music Download Interface',
+                'main-description': 'This is an interface demonstration only',
+                'url-placeholder': 'https://open.spotify.com/track/...',
+                'convert-btn': 'Analyze',
+                'quality-label': 'Audio Quality',
+                'quality-high': '320 kbps',
+                'quality-medium': '192 kbps',
+                'quality-low': '128 kbps',
+                'loading': 'Analyzing link...',
+                'download-btn': '⬇️ Download MP3',
+                'demo-notice': '⚠️ This is just an interface demonstration. No real downloads are performed.',
+                'footer': 'This application is just a UI/UX demonstration. Not affiliated with Spotify.'
+            }
+        };
+        
+        let currentLang = 'es';
+        
+        // Elementos del DOM
+        const langToggle = document.getElementById('langToggle');
+        const convertBtn = document.getElementById('convert-btn');
+        const spotifyUrl = document.getElementById('spotify-url');
+        const resultDiv = document.getElementById('result');
+        const loadingDiv = document.getElementById('loading');
+        const qualityBtns = document.querySelectorAll('.quality-btn');
+        
+        let currentQuality = 'high';
+        
+        // Función para cambiar idioma
+        function changeLanguage(lang) {
+            currentLang = lang;
+            const elements = document.querySelectorAll('[data-text]');
+            
+            elements.forEach(element => {
+                const key = element.getAttribute('data-text');
+                if (translations[lang][key]) {
+                    if (element.tagName === 'INPUT') {
+                        element.placeholder = translations[lang][key];
+                    } else {
+                        element.textContent = translations[lang][key];
+                    }
+                }
+            });
+            
+            langToggle.textContent = lang === 'es' ? 'EN' : 'ES';
+            document.documentElement.lang = lang;
+        }
+        
+        // Event listeners
+        langToggle.addEventListener('click', () => {
+            changeLanguage(currentLang === 'es' ? 'en' : 'es');
+        });
+        
+        qualityBtns.forEach(btn => {
+            btn.addEventListener('click', function() {
+                qualityBtns.forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                currentQuality = this.dataset.quality;
+            });
+        });
+        
+        convertBtn.addEventListener('click', function() {
+            const url = spotifyUrl.value.trim();
+            
+            if(!url) {
+                alert(currentLang === 'es' ? 'Por favor ingresa un enlace' : 'Please enter a link');
+                return;
+            }
+            
+            if(!url.includes('open.spotify.com/track/') && !url.includes('spotify:track:')) {
+                alert(currentLang === 'es' ? 'Por favor ingresa un enlace válido de Spotify' : 'Please enter a valid Spotify link');
+                return;
+            }
+            
+            // Mostrar loading
+            loadingDiv.style.display = 'block';
+            resultDiv.style.display = 'none';
+            
+            // Simular análisis
+            setTimeout(() => {
+                loadingDiv.style.display = 'none';
+                resultDiv.style.display = 'block';
+                
+                // Datos de ejemplo
+                document.getElementById('song-title').textContent = currentLang === 'es' ? 'Canción de Demostración' : 'Demo Song';
+                document.getElementById('song-artist').textContent = currentLang === 'es' ? 'Artista de Ejemplo' : 'Example Artist';
+            }, 2000);
+        });
+        
+        // Auto-analizar al pegar
+        spotifyUrl.addEventListener('paste', function(e) {
+            setTimeout(() => {
+                if(spotifyUrl.value.includes('open.spotify.com/track/') || spotifyUrl.value.includes('spotify:track:')) {
+                    convertBtn.click();
+                }
+            }, 100);
+        });
+        
+        // Efecto de escritura para el título
+        const title = document.querySelector('.logo h1');
+        const titleText = 'SpotyLoad';
+        let i = 0;
+        
+        function typeWriter() {
+            if (i < titleText.length) {
+                title.innerHTML = titleText.substring(0, i + 1) + '<span style="opacity:0.5">|</span>';
+                i++;
+                setTimeout(typeWriter, 100);
+            } else {
+                title.innerHTML = titleText;
+            }
+        }
+        
+        // Inicializar
+        setTimeout(typeWriter, 1000);
+    </script>
+</body>
+</html>
